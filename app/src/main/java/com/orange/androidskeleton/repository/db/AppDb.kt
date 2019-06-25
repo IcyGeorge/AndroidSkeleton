@@ -10,11 +10,13 @@ import com.orange.androidskeleton.vo.User
  */
 @Database(
     entities = [
-        User::class],
+        User::class
+    ],
     version = 1,
     exportSchema = false
 )
 abstract class AppDb : RoomDatabase() {
 
     abstract fun userDao(): UserDao
+
 }

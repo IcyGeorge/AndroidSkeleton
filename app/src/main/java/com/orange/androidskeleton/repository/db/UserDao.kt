@@ -5,7 +5,9 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.orange.androidskeleton.vo.Contributor
 import com.orange.androidskeleton.vo.User
+import io.reactivex.Flowable
 
 /**
  * Interface for database access for User related operations.
@@ -13,8 +15,9 @@ import com.orange.androidskeleton.vo.User
 @Dao
 interface UserDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(user: User)
+    fun insert(users: List<User>)
 
-    @Query("SELECT * FROM user WHERE login = :login")
-    fun findByLogin(login: String): LiveData<User>
+    @Query("SELECT * FROM user")
+    fun loadUsers(): Flowable<List<User>>
+
 }

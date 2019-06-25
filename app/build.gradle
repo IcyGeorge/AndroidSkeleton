@@ -15,7 +15,7 @@ android {
     compileSdkVersion build_versions.target_sdk
     buildToolsVersion build_versions.build_tools
     defaultConfig {
-        applicationId "com.android.example.github"
+        applicationId "com.orange.skeleton"
         minSdkVersion build_versions.min_sdk
         targetSdkVersion build_versions.target_sdk
         versionCode 1
@@ -62,13 +62,17 @@ dependencies {
     implementation deps.lifecycle.runtime
     implementation deps.lifecycle.extensions
     implementation deps.lifecycle.java8
+    implementation deps.lifecycle.reactive_streams
     implementation deps.retrofit.runtime
     implementation deps.retrofit.gson
+    implementation deps.okhttp_logging_interceptor
     implementation deps.glide.runtime
 
     implementation deps.rxjava2
     implementation deps.rx_android
+    implementation deps.rxkotlin
     implementation deps.room.rxjava2
+    implementation deps.retrofit.rxjava2
 
     implementation deps.dagger.runtime
     implementation deps.dagger.android

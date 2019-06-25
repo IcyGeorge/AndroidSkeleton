@@ -11,7 +11,7 @@ import java.util.regex.Pattern
 @Suppress("unused") // T is used in extending classes
 sealed class ApiResponse<T> {
     companion object {
-        fun <T> create(error: Throwable): ApiErrorResponse<T> {
+        fun <T> create(error: Throwable): ApiErrorResponse<T> { //TODO from message to error Object
             return ApiErrorResponse(error.message ?: "unknown error")
         }
 

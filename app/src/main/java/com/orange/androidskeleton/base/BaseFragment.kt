@@ -32,6 +32,8 @@ abstract class BaseFragment: Fragment(), Injectable {
     @Inject
     lateinit var appExecutors: AppExecutors
 
+
+
     protected fun showMessage(content: String?) {
         Observable.just("v").observeOn(Schedulers.from(appExecutors.diskIO()))
         if (content.isNullOrEmpty())

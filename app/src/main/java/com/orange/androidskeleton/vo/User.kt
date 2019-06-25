@@ -3,18 +3,16 @@ package com.orange.androidskeleton.vo
 import androidx.room.Entity
 import com.google.gson.annotations.SerializedName
 
-@Entity(primaryKeys = ["login"])
+@Entity(primaryKeys = ["id"])
 data class User(
-    @field:SerializedName("login")
-    val login: String,
-    @field:SerializedName("avatar_url")
-    val avatarUrl: String?,
-    @field:SerializedName("name")
+    @field:SerializedName("id")
+    val id: String,
+    @field:SerializedName("employee_name")
     val name: String?,
-    @field:SerializedName("company")
-    val company: String?,
-    @field:SerializedName("repos_url")
-    val reposUrl: String?,
-    @field:SerializedName("blog")
-    val blog: String?
+    @field:SerializedName("employee_salary")
+    val salary: String?,
+    @field:SerializedName("employee_age")
+    val age: String?,
+    @field:SerializedName("profile_image")
+    val imageUrl: String?
 )
