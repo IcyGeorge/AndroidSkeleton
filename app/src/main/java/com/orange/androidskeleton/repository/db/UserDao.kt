@@ -8,6 +8,7 @@ import androidx.room.Query
 import com.orange.androidskeleton.vo.Contributor
 import com.orange.androidskeleton.vo.User
 import io.reactivex.Flowable
+import io.reactivex.Single
 
 /**
  * Interface for database access for User related operations.
@@ -18,6 +19,6 @@ interface UserDao {
     fun insert(users: List<User>)
 
     @Query("SELECT * FROM user")
-    fun loadUsers(): Flowable<List<User>>
+    fun loadUsers(): Single<List<User>>
 
 }

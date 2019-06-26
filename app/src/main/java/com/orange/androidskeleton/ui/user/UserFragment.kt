@@ -75,7 +75,6 @@ class UserFragment : Fragment(), Injectable {
         }
         this.adapter = adapter
         binding.userList.adapter = adapter
-        postponeEnterTransition()
         initUserList(userViewModel)
     }
 }

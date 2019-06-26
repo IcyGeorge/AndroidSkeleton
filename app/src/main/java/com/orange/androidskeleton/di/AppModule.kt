@@ -6,6 +6,7 @@ import androidx.room.Room
 import com.orange.androidskeleton.repository.api.WebService
 import com.orange.androidskeleton.repository.db.AppDb
 import com.orange.androidskeleton.repository.db.UserDao
+import com.orange.androidskeleton.util.RxCallAdapterFactory
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient

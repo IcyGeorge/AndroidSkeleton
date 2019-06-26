@@ -11,8 +11,8 @@ import java.util.regex.Pattern
 @Suppress("unused") // T is used in extending classes
 sealed class ApiResponse<T> {
     companion object {
-        fun <T> create(error: Throwable): ApiErrorResponse<T> { //TODO from message to error Object
-            return ApiErrorResponse(error.message ?: "unknown error")
+        fun <T> create(error: Throwable): ApiErrorResponse<T> {
+            return ApiErrorResponse(error)
         }
 
         fun <T> create(response: Response<T>): ApiResponse<T> {
@@ -27,13 +27,14 @@ sealed class ApiResponse<T> {
                     )
                 }
             } else {
+                //TODO very important parse error not throwable
                 val msg = response.errorBody()?.string()
                 val errorMsg = if (msg.isNullOrEmpty()) {
                     response.message()
                 } else {
                     msg
                 }
-                ApiErrorResponse(errorMsg ?: "unknown error")
+                ApiErrorResponse(Throwable())
             }
         }
     }
@@ -90,4 +91,4 @@ data class ApiSuccessResponse<T>(
     }
 }
 
-data class ApiErrorResponse<T>(val errorMessage: String) : ApiResponse<T>()
+data class ApiErrorResponse<T>(val throwable: Throwable) : ApiResponse<T>()

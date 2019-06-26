@@ -18,23 +18,19 @@ package com.orange.androidskeleton.repository
 
 import android.content.Context
 import android.net.ConnectivityManager
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
-import com.orange.androidskeleton.AppExecutors
-import com.orange.androidskeleton.R
 import com.orange.androidskeleton.repository.api.ApiEmptyResponse
 import com.orange.androidskeleton.repository.api.ApiErrorResponse
 import com.orange.androidskeleton.repository.api.ApiResponse
 import com.orange.androidskeleton.repository.api.ApiSuccessResponse
 import com.orange.androidskeleton.vo.Resource
 import io.reactivex.Flowable
+import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.exceptions.Exceptions
 import io.reactivex.schedulers.Schedulers
-import retrofit2.HttpException
-import java.io.IOException
+import retrofit2.Response
 
 /**
  * A generic class that can provide a resource backed by both the sqlite database and the network.
@@ -47,56 +43,61 @@ import java.io.IOException
 </RequestType></ResultType> */
 abstract class NetworkBoundResource<ResultType, RequestType>(context: Context) {
 
-    private val result: Flowable<Resource<ResultType>>
+    private val result: Observable<Resource<ResultType>>
 
     init {
-        // Lazy disk observable.
-        val diskObservable = Flowable.defer {
+        result = Observable.defer {
             loadFromDb()
-                // Read from disk on Computation Scheduler
-                .subscribeOn(Schedulers.computation())
-        }
-
-        // Lazy network observable.
-        val networkObservable = Flowable.defer {
-            createCall()
-                // Request API on IO Scheduler
                 .subscribeOn(Schedulers.io())
-                // Read/Write to disk on Computation Scheduler
-                .observeOn(Schedulers.computation())
-                .doOnNext { request: ApiResponse<RequestType> ->
-                    if (request is ApiSuccessResponse) {
-                        saveCallResult(processResponse(request))
+                .flatMap { data ->
+                    if (shouldFetch(data)) {
+                        Observable.just(Resource.loading(data)).doOnNext { fetchFromNetwork() }
+                    } else {
+                        Observable.just(Resource.success(data)).doOnNext {  }
                     }
                 }
-                .flatMap { loadFromDb() }
-        }
+                .observeOn(AndroidSchedulers.mainThread())
+                .startWith(Resource.loading(null))
 
-        result = when {
-            context.isNetworkStatusAvailable() -> networkObservable
-                .map<Resource<ResultType>> { Resource.success(it) }
-                // Read results in Android Main Thread (UI)
-                .observeOn(AndroidSchedulers.mainThread())
-                .onErrorReturn { Resource.error(it) }
-                .startWith(Resource.loading(null))
-            else -> diskObservable
-                .map<Resource<ResultType>> { Resource.success(it) }
-                .onErrorReturn { Resource.error(it) }
-                // Read results in Android Main Thread (UI)
-                .observeOn(AndroidSchedulers.mainThread())
-                .startWith(Resource.loading(null))
         }
     }
 
+    private fun fetchFromNetwork() : Observable<Resource<ResultType>> {
+        return Observable.defer {
+            createCall()
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .map { ApiResponse.create(it) }
+                .onErrorReturn { ApiResponse.create(it) }
+                .flatMap { response ->
+                    when (response) {
+                        is ApiSuccessResponse -> {
+                            saveCallResult(processResponse(response))
+                            // a new observable to load updated data
+                            loadFromDb().map { data -> Resource.success(data) }
+                        }
+                        is ApiEmptyResponse -> {
+                            // reload from disk whatever we had
+                            loadFromDb().map { data -> Resource.success(data) }
+                        }
+                        is ApiErrorResponse -> {
+                            onFetchFailed()
+                            loadFromDb().map { data -> Resource.error(response.throwable, data) }
+                        }
+                    }
+                }
+        }
+
+    }
+
     private fun Context.isNetworkStatusAvailable(): Boolean {
-//        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
-//        return connectivityManager?.activeNetworkInfo?.isConnected ?:
-        return true
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+        return connectivityManager?.activeNetworkInfo?.isConnected ?: false
     }
 
     protected open fun onFetchFailed() {}
 
-    fun asFlowable() = result
+    fun asObservable() = result
 
     @WorkerThread
     protected open fun processResponse(response: ApiSuccessResponse<RequestType>) = response.body
@@ -108,8 +109,8 @@ abstract class NetworkBoundResource<ResultType, RequestType>(context: Context) {
     protected abstract fun shouldFetch(data: ResultType?): Boolean
 
     @MainThread
-    protected abstract fun loadFromDb(): Flowable<ResultType>
+    protected abstract fun loadFromDb(): Observable<ResultType>
 
     @MainThread
-    protected abstract fun createCall(): Flowable<ApiResponse<RequestType>>
+    protected abstract fun createCall(): Observable<Response<RequestType>>
 }
