@@ -8,6 +8,7 @@ import androidx.room.Query
 import com.orange.androidskeleton.vo.Contributor
 import com.orange.androidskeleton.vo.User
 import io.reactivex.Flowable
+import io.reactivex.Observable
 import io.reactivex.Single
 
 /**
@@ -19,6 +20,6 @@ interface UserDao {
     fun insert(users: List<User>)
 
     @Query("SELECT * FROM user")
-    fun loadUsers(): Single<List<User>>
+    fun loadUsers(): Flowable<List<User>>
 
 }

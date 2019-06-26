@@ -43,17 +43,18 @@ import retrofit2.Response
 </RequestType></ResultType> */
 abstract class NetworkBoundResource<ResultType, RequestType>(context: Context) {
 
-    private val result: Observable<Resource<ResultType>>
+    private val result: Flowable<Resource<ResultType>>
 
     init {
-        result = Observable.defer {
+        result = Flowable.defer {
             loadFromDb()
                 .subscribeOn(Schedulers.io())
                 .flatMap { data ->
                     if (shouldFetch(data)) {
-                        Observable.just(Resource.loading(data)).doOnNext { fetchFromNetwork() }
+                        fetchFromNetwork()
+                            .startWith(Flowable.just(Resource.success(data)))
                     } else {
-                        Observable.just(Resource.success(data)).doOnNext {  }
+                        Flowable.just(Resource.success(data))
                     }
                 }
                 .observeOn(AndroidSchedulers.mainThread())
@@ -62,9 +63,10 @@ abstract class NetworkBoundResource<ResultType, RequestType>(context: Context) {
         }
     }
 
-    private fun fetchFromNetwork() : Observable<Resource<ResultType>> {
-        return Observable.defer {
+    private fun fetchFromNetwork() : Flowable<Resource<ResultType>> {
+        return Flowable.defer {
             createCall()
+                .toFlowable()
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .map { ApiResponse.create(it) }
@@ -97,7 +99,7 @@ abstract class NetworkBoundResource<ResultType, RequestType>(context: Context) {
 
     protected open fun onFetchFailed() {}
 
-    fun asObservable() = result
+    fun asFlowable() = result
 
     @WorkerThread
     protected open fun processResponse(response: ApiSuccessResponse<RequestType>) = response.body
@@ -109,8 +111,8 @@ abstract class NetworkBoundResource<ResultType, RequestType>(context: Context) {
     protected abstract fun shouldFetch(data: ResultType?): Boolean
 
     @MainThread
-    protected abstract fun loadFromDb(): Observable<ResultType>
+    protected abstract fun loadFromDb(): Flowable<ResultType>
 
     @MainThread
-    protected abstract fun createCall(): Observable<Response<RequestType>>
+    protected abstract fun createCall(): Single<Response<RequestType>>
 }
