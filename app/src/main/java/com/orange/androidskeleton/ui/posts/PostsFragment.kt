@@ -1,4 +1,4 @@
-package com.orange.androidskeleton.ui.user
+package com.orange.androidskeleton.ui.posts
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,35 +10,31 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.fragment.FragmentNavigatorExtras
-import androidx.navigation.fragment.findNavController
-import androidx.transition.TransitionInflater
 import com.orange.androidskeleton.AppExecutors
 import com.orange.androidskeleton.R
 import com.orange.androidskeleton.binding.FragmentDataBindingComponent
-import com.orange.androidskeleton.databinding.FragmentUserBinding
+import com.orange.androidskeleton.databinding.FragmentPostsBinding
 import com.orange.androidskeleton.di.Injectable
-import com.orange.androidskeleton.ui.common.RetryCallback
 import com.orange.androidskeleton.util.autoCleared
 import javax.inject.Inject
 
 
-class UserFragment : Fragment(), Injectable {
+class PostsFragment : Fragment(), Injectable {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    lateinit var userViewModel: UserViewModel
+    lateinit var postsViewModel: PostsViewModel
 
     @Inject
     lateinit var appExecutors: AppExecutors
 
     var dataBindingComponent: DataBindingComponent = FragmentDataBindingComponent(this)
-    var binding by autoCleared<FragmentUserBinding>()
+    var binding by autoCleared<FragmentPostsBinding>()
 
-    private var adapter by autoCleared<UsersAdapter>()
+    private var adapter by autoCleared<PostsAdapter>()
 
-    private fun initUserList(viewModel: UserViewModel) {
+    private fun initUserList(viewModel: PostsViewModel) {
         viewModel.users.observe(viewLifecycleOwner, Observer { listResource ->
             // we don't need any null checks here for the adapter since LiveData guarantees that
             // it won't call us if fragment is stopped or not started.
@@ -54,9 +50,9 @@ class UserFragment : Fragment(), Injectable {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val dataBinding = DataBindingUtil.inflate<FragmentUserBinding>(
+        val dataBinding = DataBindingUtil.inflate<FragmentPostsBinding>(
             inflater,
-            R.layout.fragment_user,
+            R.layout.fragment_posts,
             container,
             false
         )
@@ -66,15 +62,15 @@ class UserFragment : Fragment(), Injectable {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        userViewModel = ViewModelProviders.of(this, viewModelFactory)
-            .get(UserViewModel::class.java)
+        postsViewModel = ViewModelProviders.of(this, viewModelFactory)
+            .get(PostsViewModel::class.java)
         binding.lifecycleOwner = viewLifecycleOwner
 
-        val adapter = UsersAdapter(dataBindingComponent, appExecutors) {
-                user -> {}
+        val adapter = PostsAdapter(dataBindingComponent, appExecutors) {
+                item -> {}
         }
         this.adapter = adapter
-        binding.userList.adapter = adapter
-        initUserList(userViewModel)
+        binding.postList.adapter = adapter
+        initUserList(postsViewModel)
     }
 }

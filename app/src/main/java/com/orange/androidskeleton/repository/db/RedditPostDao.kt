@@ -1,25 +1,21 @@
 package com.orange.androidskeleton.repository.db
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.orange.androidskeleton.vo.Contributor
-import com.orange.androidskeleton.vo.User
+import com.orange.androidskeleton.vo.RedditPost
 import io.reactivex.Flowable
-import io.reactivex.Observable
-import io.reactivex.Single
 
 /**
  * Interface for database access for User related operations.
  */
 @Dao
-interface UserDao {
+interface RedditPostDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(users: List<User>)
+    fun insert(posts: List<RedditPost>)
 
-    @Query("SELECT * FROM user")
-    fun loadUsers(): Flowable<List<User>>
+    @Query("SELECT * FROM posts WHERE subreddit = :subreddit")
+    fun loadPosts(subreddit: String): Flowable<List<RedditPost>>
 
 }

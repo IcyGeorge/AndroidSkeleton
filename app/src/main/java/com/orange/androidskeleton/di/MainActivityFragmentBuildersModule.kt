@@ -1,7 +1,7 @@
 package com.orange.androidskeleton.di
 
 
-import com.orange.androidskeleton.ui.user.UserFragment
+import com.orange.androidskeleton.ui.posts.PostsFragment
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -10,5 +10,5 @@ import dagger.android.ContributesAndroidInjector
 abstract class MainActivityFragmentBuildersModule {
 
     @ContributesAndroidInjector
-    abstract fun contributeUserFragment(): UserFragment
+    abstract fun contributeUserFragment(): PostsFragment
 }

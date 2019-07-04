@@ -5,8 +5,7 @@ import android.app.Application
 import androidx.room.Room
 import com.orange.androidskeleton.repository.api.WebService
 import com.orange.androidskeleton.repository.db.AppDb
-import com.orange.androidskeleton.repository.db.UserDao
-import com.orange.androidskeleton.util.RxCallAdapterFactory
+import com.orange.androidskeleton.repository.db.RedditPostDao
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -31,7 +30,7 @@ class AppModule {
             )
             .build()
         return Retrofit.Builder()
-            .baseUrl("http://dummy.restapiexample.com/api/v1/")
+            .baseUrl(WebService.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .client(okHttpClient)
@@ -50,8 +49,8 @@ class AppModule {
 
     @Singleton
     @Provides
-    fun provideUserDao(db: AppDb): UserDao {
-        return db.userDao()
+    fun provideRedditPostDao(db: AppDb): RedditPostDao {
+        return db.redditPostDao()
     }
 
 }

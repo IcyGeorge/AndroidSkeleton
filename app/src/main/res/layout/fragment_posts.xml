@@ -6,27 +6,17 @@
 
     <data>
         <import type="com.orange.androidskeleton.vo.Status"/>
-
         <import type="com.orange.androidskeleton.vo.Resource"/>
-
         <import type="androidx.lifecycle.LiveData"/>
-        <import type="com.orange.androidskeleton.vo.User"/>
-        <import type="com.bumptech.glide.request.RequestListener"/>
-        <import type="android.graphics.drawable.Drawable"/>
-
+        <import type="com.orange.androidskeleton.vo.RedditPost"/>
 
         <variable
-                name="user"
-                type="LiveData&lt;Resource&lt;User>>"/>
+                name="posts"
+                type="LiveData&lt;Resource&lt;RedditPost>>"/>
 
         <variable
                 name="retryCallback"
                 type="com.orange.androidskeleton.ui.common.RetryCallback"/>
-
-        <variable
-                name="imageRequestListener"
-                type="com.bumptech.glide.request.RequestListener&lt;Drawable>"/>
-
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -37,7 +27,7 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginTop="8dp"
-                android:id="@+id/user_list"
+                android:id="@+id/post_list"
                 app:layoutManager="LinearLayoutManager"
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:layout_marginBottom="8dp"
@@ -46,11 +36,11 @@
                 app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginStart="8dp"
             app:layout_constraintTop_toTopOf="parent"
-                tools:listitem="@layout/item_user"/>
+                tools:listitem="@layout/item_post"/>
 
         <include
                 layout="@layout/loading_state"
-                app:resource="@{(Resource) user}"
+                app:resource="@{(Resource) posts}"
                 app:callback="@{() -> retryCallback.retry()}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

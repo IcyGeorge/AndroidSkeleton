@@ -3,6 +3,6 @@
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/nav_main" app:startDestination="@id/userFragment">
 
-    <fragment android:id="@+id/userFragment" android:name="com.orange.androidskeleton.ui.user.UserFragment"
+    <fragment android:id="@+id/userFragment" android:name="com.orange.androidskeleton.ui.posts.PostsFragment"
               android:label="UserFragment"/>
 </navigation>

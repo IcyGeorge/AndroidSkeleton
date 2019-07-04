@@ -4,8 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.orange.androidskeleton.ViewModelFactory
 
-import com.orange.androidskeleton.di.ViewModelKey
-import com.orange.androidskeleton.ui.user.UserViewModel
+import com.orange.androidskeleton.ui.posts.PostsViewModel
 
 import dagger.Binds
 import dagger.Module
@@ -16,8 +15,8 @@ import dagger.multibindings.IntoMap
 abstract class ViewModelModule {
     @Binds
     @IntoMap
-    @ViewModelKey(UserViewModel::class)
-    abstract fun bindUserViewModel(userViewModel: UserViewModel): ViewModel
+    @ViewModelKey(PostsViewModel::class)
+    abstract fun bindUserViewModel(postsViewModel: PostsViewModel): ViewModel
 
     @Binds
     abstract fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
