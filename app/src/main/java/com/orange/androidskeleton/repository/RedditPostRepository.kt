@@ -25,7 +25,7 @@ class RedditPostRepository @Inject constructor(
         return object : NetworkBoundResource<List<RedditPost>, ListingResponse>(application) {
             override fun saveCallResult(item: ListingResponse) {
                 item.data.children.let { posts ->
-                    val items = posts.mapIndexed { _, child ->
+                    val items = posts.map { child ->
                         child.data
                     }
                     redditPostDao.insert(items)
